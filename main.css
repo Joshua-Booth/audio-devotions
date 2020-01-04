@@ -1,0 +1,59 @@
+#toggleColour {
+    background-color: white;
+    border-radius: 20px;
+    height: 40px;
+    font-weight: bold;
+}
+
+#toggleColour:hover {
+    background-color: grey;
+}
+
+#reading {
+	text-align: center;
+    margin-top: 15%;
+}
+
+#title {
+	font-size: 500%;
+    font-family: arial;
+}
+
+#media-controls {
+	text-align: center;
+    height: 20vh;
+    position: absolute;
+    bottom: 20%;
+    margin: auto;
+    left: 0;
+    right: 0;
+}
+
+#media-controls button {
+    background-color: white;
+	margin: 0% 2%;
+    height: 100%;
+    width: 20%;
+    border-radius: 20px;
+}
+
+#media-controls button:hover {
+    background-color: grey;
+}
+
+#media-controls i {
+	padding: 0% 5%;
+    font-size: 1100%;
+}
+
+.fa-play {
+	color: green;
+}
+
+.fa-pause {
+    color: red;
+}
+
+#time-period {
+	text-align: center;
+}
