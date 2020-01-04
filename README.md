@@ -1,4 +1,4 @@
-# audio-devotions
+# Audio Bible Devotions
 This website is for listening to daily Bible devotions. It uses large media buttons to assist those with poor eyesight.
 
 ### Preview
