@@ -73,14 +73,8 @@ export const getDate = () => {
  * @returns {Array} List of source urls
  */
 export const getSources = () => {
-  const {
-    year,
-    shortYear,
-    month,
-    day,
-    dayBehindToday,
-    dayBehindMonth,
-  } = getDate();
+  const { year, shortYear, month, day, dayBehindToday, dayBehindMonth } =
+    getDate();
 
   return [
     `https://stream.biblegateway.com/media/32/morning-and-evening/${month}${day}m.mp3`,
@@ -121,11 +115,11 @@ export const getDelayedSourceNames = () => {
   return ["Micheal Youssef"];
 };
 
-/** 
-* Toggle the colour theme of the app.
-* @example
-* toggleColour()
-*/
+/**
+ * Toggle the colour theme of the app.
+ * @example
+ * toggleColour()
+ */
 export const toggleColour = () => {
   var bodyStyle = document.body.style;
 
