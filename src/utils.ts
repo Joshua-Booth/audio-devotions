@@ -2,11 +2,24 @@
  * @module utils
  */
 
+const dateFromDay = (year: number, day: number) => {
+  const date = new Date(year, 0); // initialise a date in `year-01-01`
+  return new Date(date.setDate(day)); // add the number of days
+}
+
+const formatPeriod = (period: number) => {
+  if (period < 10) {
+    return "0" + period.toString();
+  } else {
+    return period.toString();
+  }
+};
+
 /**
  * @typedef {Object} Date
  * @property {year} KeyNameHere - Brief description of the key here.
  * @property {number} year The current year (e.g. 2021)
- * @property {string} shortYear The shortend current year (e.g. 21)
+ * @property {string} shortYear The shortened current year (e.g. 21)
  * @property {string} month The current month (e.g. 03)
  * @property {number} day Today's day number (e.g. 29)
  * @property {string} date Date string (e.g. 2021-3-29)
@@ -19,50 +32,36 @@
  * @returns {Date} The current date data
  */
 export const getDate = () => {
-  var today = new Date();
+  const today = new Date();
 
-  var year = today.getFullYear();
-  var shortYear = year.toString().slice(-2);
-  var month = today.getMonth() + 1;
-  var day = today.getDate();
-  var date = year + "-" + month + "-" + day;
+  const year = today.getFullYear();
+  const shortYear = year.toString().slice(-2);
+  const month = today.getMonth() + 1;
+  const day = today.getDate();
+  const date = year + "-" + month + "-" + day;
 
   // For devotionals one day behind
-  var start = new Date(today.getFullYear(), 0, 0);
-  var diff =
-    today -
-    start +
+  const start = new Date(today.getFullYear(), 0, 0);
+  const startDate =
     (start.getTimezoneOffset() - today.getTimezoneOffset()) * 60 * 1000;
-  var oneDay = 1000 * 60 * 60 * 24;
-  var dayOfYear = Math.floor(diff / oneDay);
 
-  function dateFromDay(year, day) {
-    var date = new Date(year, 0); // initialise a date in `year-01-01`
-    return new Date(date.setDate(day)); // add the number of days
-  }
+  const diff = today.getTime() - start.getTime() + startDate;
 
-  var dayBehindDate = dateFromDay(year, dayOfYear - 1);
-  var dayBehindToday = dayBehindDate.getDate();
-  var dayBehindMonth = dayBehindDate.getMonth() + 1;
+  const MS_PER_DAY = 1000 * 60 * 60 * 24;
+  const dayOfYear = Math.floor(diff / MS_PER_DAY);
 
-  if (month < 10) {
-    month = "0" + month;
-    dayBehindMonth = "0" + dayBehindMonth;
-  }
-
-  if (day < 10) {
-    day = "0" + day;
-    dayBehindToday = "0" + dayBehindToday;
-  }
+  const dayBehindDate = dateFromDay(year, dayOfYear - 1);
+  const dayBehindToday = dayBehindDate.getDate();
+  const dayBehindMonth = dayBehindDate.getMonth() + 1;
 
   return {
     year,
     shortYear,
-    month,
-    day,
+    month: formatPeriod(month),
+    day: formatPeriod(day),
     date,
-    dayBehindToday,
-    dayBehindMonth,
+    dayBehindToday: formatPeriod(dayBehindToday),
+    dayBehindMonth: formatPeriod(dayBehindMonth),
   };
 };
 
@@ -121,7 +120,7 @@ export const getDelayedSourceNames = () => {
  * toggleColour()
  */
 export const toggleColour = () => {
-  var bodyStyle = document.body.style;
+  const bodyStyle = document.body.style;
 
   if (bodyStyle.color === "white") {
     bodyStyle.color = "black";

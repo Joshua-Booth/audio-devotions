@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import ReactPlayer from "react-player";
 
 // Utilities
@@ -17,7 +17,7 @@ class App extends Component {
   state = {
     url: null,
     currentIndex: 0,
-    urls: null,
+    urls: null as null | string[],
     showForward: true,
     showBackward: false,
     pip: false,
@@ -31,9 +31,10 @@ class App extends Component {
     duration: 0,
     playbackRate: 1.0,
     loop: false,
+    seeking: 0
   };
 
-  load = (url) => {
+  load = (url: string) => {
     this.setState({
       url,
       played: 0,
@@ -48,7 +49,7 @@ class App extends Component {
 
   handleStop = () => {
     this.setState({ playing: false });
-    this.player.seekTo(0);
+    this.player?.seekTo(0);
   };
 
   handleToggleLight = () => {
@@ -59,7 +60,7 @@ class App extends Component {
     this.setState({ loop: !this.state.loop });
   };
 
-  handleVolumeChange = (e) => {
+  handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ volume: parseFloat(e.target.value) });
   };
 
@@ -67,7 +68,7 @@ class App extends Component {
     this.setState({ muted: !this.state.muted });
   };
 
-  handleSetPlaybackRate = (e) => {
+  handleSetPlaybackRate = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ playbackRate: parseFloat(e.target.value) });
   };
 
@@ -91,20 +92,20 @@ class App extends Component {
     this.setState({ playing: false });
   };
 
-  handleSeekMouseDown = (e) => {
+  handleSeekMouseDown = () => {
     this.setState({ seeking: true });
   };
 
-  handleSeekChange = (e) => {
+  handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ played: parseFloat(e.target.value) });
   };
 
-  handleSeekMouseUp = (e) => {
+  handleSeekMouseUp = (e: any) => {
     this.setState({ seeking: false });
-    this.player.seekTo(parseFloat(e.target.value));
+    this.player?.seekTo(parseFloat(e.target.value));
   };
 
-  handleProgress = (state) => {
+  handleProgress = (state: any) => {
     // Only update time slider if not currently seeking
     if (!this.state.seeking) {
       this.setState(state);
@@ -115,11 +116,11 @@ class App extends Component {
     this.setState({ playing: this.state.loop });
   };
 
-  handleDuration = (duration) => {
+  handleDuration = (duration: typeof this.state.duration) => {
     this.setState({ duration });
   };
 
-  ref = (player) => {
+  ref = (player: ReactPlayer) => {
     this.player = player;
   };
 
@@ -142,8 +143,12 @@ class App extends Component {
   };
 
   loadInitial = () => {
-    this.load(this.state.urls[0]);
+    if (this.state.urls) {
+      this.load(this.state.urls[0]);
+    }
   };
+
+  player: ReactPlayer | undefined;
 
   componentDidMount() {
     this.setState(
@@ -156,6 +161,8 @@ class App extends Component {
 
   handleBackward = () => {
     const { urls, currentIndex } = this.state;
+
+    if (!urls) return;
 
     if (
       (currentIndex > urls.length && currentIndex !== urls.length) ||
@@ -174,6 +181,8 @@ class App extends Component {
 
   handleForward = () => {
     const { urls, currentIndex } = this.state;
+
+    if (!urls) return;
 
     if (
       (currentIndex < urls.length && currentIndex + 1 !== urls.length) ||
@@ -212,7 +221,7 @@ class App extends Component {
               className="react-player"
               width="100%"
               height="100%"
-              url={url}
+              url={url ?? undefined}
               config={{
                 file: {
                   forceAudio: true,
