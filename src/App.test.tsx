@@ -1,11 +1,11 @@
-import React from "react";
 import { render } from "@testing-library/react";
 import { axe } from "jest-axe";
 
 // Component
 import App from "./App";
 
-test("renders today's date", () => {
+
+it("renders today's date", () => {
   const { getByText } = render(<App />);
 
   const year = new Date().getFullYear();
@@ -16,7 +16,7 @@ test("renders today's date", () => {
   expect(dateElement).toBeInTheDocument();
 });
 
-test("should have no accessibility violations", async () => {
+it("should have no accessibility violations", async () => {
   render(<App />);
   const results = await axe(document.body);
   expect(results).toHaveNoViolations();

@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
     "prepare": "husky install",
     "prettier": "npx prettier '**/*.+(js|json|css|html|md)' --ignore-path .gitignore"
   },
@@ -26,18 +27,26 @@
     ]
   },
   "dependencies": {
-    "dateformat": "^4.5.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-player": "^2.9.0",
-    "react-scripts": "4.0.3"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-player": "^2.11.0"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^12.0.0",
-    "@testing-library/user-event": "^13.2.1",
-    "husky": "^7.0.2",
-    "jest-axe": "^5.0.1",
-    "prettier": "^2.3.2"
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/jest-axe": "^3.5.5",
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6",
+    "@types/testing-library__jest-dom": "^5.14.5",
+    "@vitejs/plugin-react": "^2.1.0",
+    "@vitest/ui": "^0.24.3",
+    "husky": "^8.0.1",
+    "jest-axe": "^6.0.0",
+    "jsdom": "^20.0.1",
+    "prettier": "^2.7.1",
+    "vite": "^3.1.8",
+    "vite-plugin-svgr": "^2.2.2",
+    "vitest": "^0.24.3"
   }
 }
