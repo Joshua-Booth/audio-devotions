@@ -4,7 +4,6 @@ import { axe } from "jest-axe";
 // Component
 import App from "./App";
 
-
 it("renders today's date", () => {
   const { getByText } = render(<App />);
 
@@ -16,7 +15,7 @@ it("renders today's date", () => {
   expect(dateElement).toBeInTheDocument();
 });
 
-it.skip("should have no accessibility violations", async () => {
+it("should have no accessibility violations", async () => {
   render(<App />);
 
   const results = await axe(document.body);
