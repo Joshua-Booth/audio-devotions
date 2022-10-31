@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { axe } from "jest-axe";
 
 // Component
@@ -18,6 +18,9 @@ it("renders today's date", () => {
 
 it("should have no accessibility violations", async () => {
   render(<App />);
-  const results = await axe(document.body);
-  expect(results).toHaveNoViolations();
+  
+  waitFor(async () => {
+    const results = await axe(document.body);
+    expect(results).toHaveNoViolations();
+  })
 });
