@@ -31,7 +31,7 @@ class App extends Component {
     duration: 0,
     playbackRate: 1.0,
     loop: false,
-    seeking: 0
+    seeking: 0,
   };
 
   load = (url: string) => {
@@ -265,41 +265,43 @@ class App extends Component {
               aria-label="Seeker"
             />
 
-            <button
-              className={`button ${showBackward ? "" : "hide"}`}
-              onClick={this.handleBackward}
-              aria-label="Skip Backward"
-            >
-              <i className="fa fa-fast-backward"></i>
-            </button>
+            <div>
+              <button
+                className={`button ${showBackward ? "" : "hide"}`}
+                onClick={this.handleBackward}
+                aria-label="Skip Backward"
+              >
+                <i className="fa fa-fast-backward"></i>
+              </button>
 
-            <button
-              className="button"
-              onClick={this.handleStop}
-              aria-label="Stop"
-            >
-              <i className="fa fa-stop"></i>
-            </button>
+              <button
+                className="button"
+                onClick={this.handleStop}
+                aria-label="Stop"
+              >
+                <i className="fa fa-stop"></i>
+              </button>
 
-            <button
-              className="button"
-              onClick={this.handlePlayPause}
-              aria-label="Toggle Play/Pause"
-            >
-              {playing ? (
-                <i className="fa fa-pause"></i>
-              ) : (
-                <i className="fa fa-play"></i>
-              )}
-            </button>
+              <button
+                className="button"
+                onClick={this.handlePlayPause}
+                aria-label="Toggle Play/Pause"
+              >
+                {playing ? (
+                  <i className="fa fa-pause"></i>
+                ) : (
+                  <i className="fa fa-play"></i>
+                )}
+              </button>
 
-            <button
-              className={`button ${showForward ? "" : "hide"}`}
-              onClick={this.handleForward}
-              aria-label="Skip Forward"
-            >
-              <i className="fa fa-fast-forward"></i>
-            </button>
+              <button
+                className={`button ${showForward ? "" : "hide"}`}
+                onClick={this.handleForward}
+                aria-label="Skip Forward"
+              >
+                <i className="fa fa-fast-forward"></i>
+              </button>
+            </div>
           </div>
         </section>
       </div>
