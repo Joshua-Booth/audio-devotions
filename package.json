@@ -45,7 +45,7 @@
     "jest-axe": "^6.0.1",
     "jsdom": "^21.1.0",
     "prettier": "^2.8.4",
-    "vite": "^4.1.1",
+    "vite": "^4.1.5",
     "vite-plugin-svgr": "^2.4.0",
     "vitest": "^0.28.5"
   }
