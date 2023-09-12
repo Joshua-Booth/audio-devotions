@@ -80,7 +80,12 @@ export const getSources = () => {
     `https://stream.biblegateway.com/media/32/morning-and-evening/${month}${day}e.mp3`,
     `https://resources.vision.org.au/audio/thewordfortoday/${year}${month}${day}.mp3`,
     `https://dzxuyknqkmi1e.cloudfront.net/odb/${year}/${month}/odb-${month}-${day}-${shortYear}.mp3`,
-    `https://podcasts.moodyradio.org/TodayintheWordDevotional/${year}-${dayBehindMonth}-${dayBehindToday}_tw_stream.mp3`,
+
+    // Hardcoded to the current year less 6 years as the 2023 Sept. path is based now on the title
+    // This will need to be fixed in 6 years time.
+    // TODO: find a non-titled URL for Today in the Word
+    `https://podcasts.moodyradio.org/TodayintheWordDevotional/${year - 6}-${dayBehindMonth}-${dayBehindToday}_tw_stream.mp3`,
+
     `https://mp3.sermonaudio.com/filearea/fcb${month}${day}/fcb${month}${day}.mp3`,
     `http://web.audio.ltw.org/${year}/ltw${year}${dayBehindMonth}${dayBehindToday}.mp3`,
   ];
