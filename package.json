@@ -40,13 +40,13 @@
     "@types/react-dom": "^18.0.11",
     "@types/testing-library__jest-dom": "^5.14.5",
     "@vitejs/plugin-react": "^3.1.0",
-    "@vitest/ui": "^0.28.5",
+    "@vitest/ui": "^0.34.4",
     "husky": "^8.0.3",
     "jest-axe": "^6.0.1",
     "jsdom": "^21.1.0",
     "prettier": "^2.8.4",
     "vite": "^4.4.9",
     "vite-plugin-svgr": "^2.4.0",
-    "vitest": "^0.28.5"
+    "vitest": "^0.34.4"
   }
 }
