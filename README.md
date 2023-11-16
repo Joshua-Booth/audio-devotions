@@ -1,6 +1,6 @@
 # Audio Bible Devotions
 
-This webapp is for listening to daily Bible devotions.
+This web app is for listening to daily Bible devotions.
 
 The goal of this project is to assist those with poor eyesight by providing an
 easy-to-use interface with large media controls.
