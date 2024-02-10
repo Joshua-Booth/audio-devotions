@@ -8,7 +8,7 @@
     "serve": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "prepare": "husky install",
+    "prepare": "husky",
     "prettier": "npx prettier '**/*.+(js|json|css|html|md)' --ignore-path .gitignore"
   },
   "eslintConfig": {
@@ -40,7 +40,7 @@
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^3.1.0",
     "@vitest/ui": "^0.34.4",
-    "husky": "^8.0.3",
+    "husky": "^9.0.10",
     "jest-axe": "^6.0.1",
     "jsdom": "^22.1.0",
     "prettier": "^2.8.4",
