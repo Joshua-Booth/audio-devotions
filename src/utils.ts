@@ -5,7 +5,7 @@
 const dateFromDay = (year: number, day: number) => {
   const date = new Date(year, 0); // initialise a date in `year-01-01`
   return new Date(date.setDate(day)); // add the number of days
-}
+};
 
 const formatPeriod = (period: number) => {
   if (period < 10) {

@@ -9,7 +9,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "prepare": "husky",
-    "prettier": "npx prettier '**/*.+(js|json|css|html|md)' --ignore-path .gitignore"
+    "prettier": "npx prettier '**/*.+(ts|tsx|js|json|css|html|md)' --ignore-path .gitignore"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -43,7 +43,7 @@
     "husky": "^9.0.10",
     "jest-axe": "^6.0.1",
     "jsdom": "^22.1.0",
-    "prettier": "^2.8.4",
+    "prettier": "^3.2.5",
     "vite": "^4.4.9",
     "vite-plugin-svgr": "^2.4.0",
     "vitest": "^0.34.4"
