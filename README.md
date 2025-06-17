@@ -1,3 +1,5 @@
+> Originally created for my Granddad to be used on his iPad but now shared publicly as a convenient and accessible audio devotional player.
+
 # Audio Bible Devotions
 
 This web app is for listening to daily Bible devotions.
