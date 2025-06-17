@@ -1,10 +1,10 @@
 {
-  "name": "Bob's Bible Readings",
-  "short_name": "Bible Readings",
+  "name": "Audio Devotions",
+  "short_name": "Audio Devotions",
   "theme_color": "#000000",
   "background_color": "#ffffff",
   "display": "standalone",
-  "description": "An audio devotional application.",
+  "description": "An audio devotional website, it provides daily devotions through a number of different sites.",
   "start_url": "/",
   "icons": [
     {
