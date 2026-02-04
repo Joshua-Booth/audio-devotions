@@ -2,21 +2,21 @@
  * @module utils
  */
 
-const dateFromDay = (year: number, day: number) => {
+function dateFromDay(year: number, day: number) {
   const date = new Date(year, 0); // initialise a date in `year-01-01`
   return new Date(date.setDate(day)); // add the number of days
-};
+}
 
-const formatPeriod = (period: number) => {
+function formatPeriod(period: number) {
   if (period < 10) {
-    return "0" + period.toString();
+    return `0${period.toString()}`;
   } else {
     return period.toString();
   }
-};
+}
 
 /**
- * @typedef {Object} Date
+ * @typedef {object} Date
  * @property {year} KeyNameHere - Brief description of the key here.
  * @property {number} year The current year (e.g. 2021)
  * @property {string} shortYear The shortened current year (e.g. 21)
@@ -31,14 +31,14 @@ const formatPeriod = (period: number) => {
  * Generate and return data information.
  * @returns {Date} The current date data
  */
-export const getDate = () => {
+export function getDate() {
   const today = new Date();
 
   const year = today.getFullYear();
   const shortYear = year.toString().slice(-2);
   const month = today.getMonth() + 1;
   const day = today.getDate();
-  const date = year + "-" + month + "-" + day;
+  const date = `${year}-${month}-${day}`;
 
   // For devotionals one day behind
   const start = new Date(today.getFullYear(), 0, 0);
@@ -63,7 +63,7 @@ export const getDate = () => {
     dayBehindToday: formatPeriod(dayBehindToday),
     dayBehindMonth: formatPeriod(dayBehindMonth),
   };
-};
+}
 
 /**
  * Get a list of source urls.
@@ -71,7 +71,7 @@ export const getDate = () => {
  * getSources()
  * @returns {Array} List of source urls
  */
-export const getSources = () => {
+export function getSources() {
   const { year, shortYear, month, day, dayBehindToday, dayBehindMonth } =
     getDate();
 
@@ -83,7 +83,7 @@ export const getSources = () => {
     `https://mp3.sermonaudio.com/filearea/fcb${month}${day}/fcb${month}${day}.mp3`,
     `http://web.audio.ltw.org/${year}/ltw${year}${dayBehindMonth}${dayBehindToday}.mp3`,
   ];
-};
+}
 
 /**
  * Get a list of source names.
@@ -91,7 +91,7 @@ export const getSources = () => {
  * getSourceNames()
  * @returns {Array} List of source names
  */
-export const getSourceNames = () => {
+export function getSourceNames() {
   return [
     "Charles Spurgeon - Morning",
     "Charles Spurgeon - Evening",
@@ -100,7 +100,7 @@ export const getSourceNames = () => {
     "Faith's Checkbook",
     "Micheal Youssef",
   ];
-};
+}
 
 /**
  * Get a list of source names that are delayed by more than a day.
@@ -108,16 +108,16 @@ export const getSourceNames = () => {
  * getDelayedSourceNames()
  * @returns {Array} List of delayed source names
  */
-export const getDelayedSourceNames = () => {
+export function getDelayedSourceNames() {
   return ["Micheal Youssef"];
-};
+}
 
 /**
  * Toggle the colour theme of the app.
  * @example
  * toggleColour()
  */
-export const toggleColour = () => {
+export function toggleColour() {
   const bodyStyle = document.body.style;
 
   if (bodyStyle.color === "white") {
@@ -127,4 +127,4 @@ export const toggleColour = () => {
     bodyStyle.color = "white";
     bodyStyle.backgroundColor = "black";
   }
-};
+}

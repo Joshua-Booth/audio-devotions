@@ -3,16 +3,36 @@ import ReactPlayer from "react-player";
 
 import {
   getDate,
-  getSources,
-  getSourceNames,
   getDelayedSourceNames,
+  getSourceNames,
+  getSources,
   toggleColour,
 } from "./utils";
 
 import "./App.css";
 
-class App extends Component {
-  state = {
+interface AppState {
+  url: string | null;
+  currentIndex: number;
+  urls: string[] | null;
+  showForward: boolean;
+  showBackward: boolean;
+  pip: boolean;
+  playing: boolean;
+  controls: boolean;
+  light: boolean;
+  volume: number;
+  muted: boolean;
+  played: number;
+  loaded: number;
+  duration: number;
+  playbackRate: number;
+  loop: boolean;
+  seeking: boolean;
+}
+
+class App extends Component<Record<string, never>, AppState> {
+  state: AppState = {
     url: null,
     currentIndex: 0,
     urls: null as null | string[],
@@ -29,7 +49,7 @@ class App extends Component {
     duration: 0,
     playbackRate: 1.0,
     loop: false,
-    seeking: 0,
+    seeking: false,
   };
 
   load = (url: string) => {
@@ -42,7 +62,7 @@ class App extends Component {
   };
 
   handlePlayPause = () => {
-    this.setState({ playing: !this.state.playing });
+    this.setState((prevState) => ({ playing: !prevState.playing }));
   };
 
   handleStop = () => {
@@ -53,27 +73,27 @@ class App extends Component {
   };
 
   handleToggleLight = () => {
-    this.setState({ light: !this.state.light });
+    this.setState((prevState) => ({ light: !prevState.light }));
   };
 
   handleToggleLoop = () => {
-    this.setState({ loop: !this.state.loop });
+    this.setState((prevState) => ({ loop: !prevState.loop }));
   };
 
   handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ volume: parseFloat(e.target.value) });
+    this.setState({ volume: Number.parseFloat(e.target.value) });
   };
 
   handleToggleMuted = () => {
-    this.setState({ muted: !this.state.muted });
+    this.setState((prevState) => ({ muted: !prevState.muted }));
   };
 
   handleSetPlaybackRate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ playbackRate: parseFloat(e.target.value) });
+    this.setState({ playbackRate: Number.parseFloat(e.target.value) });
   };
 
   handleTogglePIP = () => {
-    this.setState({ pip: !this.state.pip });
+    this.setState((prevState) => ({ pip: !prevState.pip }));
   };
 
   handlePlay = () => {
@@ -97,14 +117,15 @@ class App extends Component {
   };
 
   handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ played: parseFloat(e.target.value) });
+    this.setState({ played: Number.parseFloat(e.target.value) });
   };
 
   handleSeekMouseUp = (e: React.MouseEvent<HTMLInputElement>) => {
     this.setState({ seeking: false });
     if (this.player) {
       this.player.currentTime =
-        parseFloat((e.target as HTMLInputElement).value) * this.player.duration;
+        Number.parseFloat((e.target as HTMLInputElement).value) *
+        this.player.duration;
     }
   };
 
@@ -118,7 +139,7 @@ class App extends Component {
   };
 
   handleEnded = () => {
-    this.setState({ playing: this.state.loop });
+    this.setState((prevState) => ({ playing: prevState.loop }));
   };
 
   handleDurationChange = (e: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -137,7 +158,7 @@ class App extends Component {
 
     let audioDate = date.toString();
     if (delayedSourceNames.includes(sourceNames[this.state.currentIndex])) {
-      audioDate = year + "-" + dayBehindMonth + "-" + dayBehindToday;
+      audioDate = `${year}-${dayBehindMonth}-${dayBehindToday}`;
     }
 
     return `${audioDate}`;

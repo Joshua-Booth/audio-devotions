@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "vitest"],
+  "env": {
+    "browser": true
+  },
+  "settings": {
+    "react": {
+      "version": "19.0"
+    }
+  }
+}
