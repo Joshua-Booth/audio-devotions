@@ -19,9 +19,9 @@ easy-to-use interface with large media controls.
 
 ## Getting Started
 
-Run `npm start` to start the dev server.
+Run `pnpm start` to start the dev server.
 
-Run `npm run build` to create a production build.
+Run `pnpm build` to create a production build.
 
 #### Adding additional sources
 
