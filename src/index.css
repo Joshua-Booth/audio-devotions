@@ -98,6 +98,7 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
   background-color: white;
   margin: 0% 2%;
   width: 20%;
+  padding: 20px 10px;
   border-color: #000000;
   border-radius: 20px;
 }
@@ -106,21 +107,9 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
   background-color: grey;
 }
 
-#media-controls i {
-  padding: 40px 20px;
-  font-size: 1100%;
-}
-
-.fa-play {
-  color: green;
-}
-
-.fa-pause {
-  color: black;
-}
-
-.fa-stop {
-  color: red;
+#media-controls svg {
+  width: 140px;
+  height: 140px;
 }
 
 #time-period {
@@ -136,13 +125,13 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
     width: 50%;
   }
 
-  #media-controls i {
-    font-size: 200%;
-    padding: 20px;
+  #media-controls svg {
+    width: 60px;
+    height: 60px;
   }
 
   #media-controls button {
-    height: 150%;
+    padding: 10px;
   }
 }
 

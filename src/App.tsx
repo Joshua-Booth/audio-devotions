@@ -1,3 +1,10 @@
+import {
+  PauseIcon,
+  PlayIcon,
+  SkipBackIcon,
+  SkipForwardIcon,
+  StopIcon,
+} from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 
@@ -159,22 +166,22 @@ function App() {
               onClick={handleBackward}
               aria-label="Skip Backward"
             >
-              <i className="fa fa-fast-backward"></i>
+              <SkipBackIcon weight="fill" />
             </button>
 
             <button className="button" onClick={handleStop} aria-label="Stop">
-              <i className="fa fa-stop"></i>
+              <StopIcon weight="fill" color="red" />
             </button>
 
             <button
               className="button"
               onClick={handlePlayPause}
-              aria-label="Toggle Play/Pause"
+              aria-label={playing ? "Pause" : "Play"}
             >
               {playing ? (
-                <i className="fa fa-pause"></i>
+                <PauseIcon weight="fill" />
               ) : (
-                <i className="fa fa-play"></i>
+                <PlayIcon weight="fill" color="green" />
               )}
             </button>
 
@@ -183,7 +190,7 @@ function App() {
               onClick={handleForward}
               aria-label="Skip Forward"
             >
-              <i className="fa fa-fast-forward"></i>
+              <SkipForwardIcon weight="fill" />
             </button>
           </div>
         </div>

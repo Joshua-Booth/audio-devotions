@@ -19,32 +19,25 @@ export const PlayPauseToggle: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const playPauseButton = canvas.getByRole("button", {
-      name: "Toggle Play/Pause",
-    });
-
-    // Initially should show play icon
-    expect(playPauseButton.querySelector(".fa-play")).toBeInTheDocument();
-    expect(playPauseButton.querySelector(".fa-pause")).not.toBeInTheDocument();
+    // Initially should show Play button
+    const playButton = canvas.getByRole("button", { name: "Play" });
+    expect(playButton).toBeInTheDocument();
 
     // Click to play
-    await userEvent.click(playPauseButton);
+    await userEvent.click(playButton);
 
-    // Should now show pause icon (playing state)
+    // Should now show Pause button
     await waitFor(() => {
-      expect(playPauseButton.querySelector(".fa-pause")).toBeInTheDocument();
-      expect(playPauseButton.querySelector(".fa-play")).not.toBeInTheDocument();
+      expect(canvas.getByRole("button", { name: "Pause" })).toBeInTheDocument();
     });
 
     // Click to pause
-    await userEvent.click(playPauseButton);
+    const pauseButton = canvas.getByRole("button", { name: "Pause" });
+    await userEvent.click(pauseButton);
 
-    // Should show play icon again
+    // Should show Play button again
     await waitFor(() => {
-      expect(playPauseButton.querySelector(".fa-play")).toBeInTheDocument();
-      expect(
-        playPauseButton.querySelector(".fa-pause")
-      ).not.toBeInTheDocument();
+      expect(canvas.getByRole("button", { name: "Play" })).toBeInTheDocument();
     });
   },
 };
@@ -54,24 +47,22 @@ export const StopButton: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const playPauseButton = canvas.getByRole("button", {
-      name: "Toggle Play/Pause",
-    });
+    const playButton = canvas.getByRole("button", { name: "Play" });
     const stopButton = canvas.getByRole("button", { name: "Stop" });
 
     // Start playing
-    await userEvent.click(playPauseButton);
+    await userEvent.click(playButton);
 
     await waitFor(() => {
-      expect(playPauseButton.querySelector(".fa-pause")).toBeInTheDocument();
+      expect(canvas.getByRole("button", { name: "Pause" })).toBeInTheDocument();
     });
 
     // Click stop
     await userEvent.click(stopButton);
 
-    // Should show play icon (stopped state)
+    // Should show Play button (stopped state)
     await waitFor(() => {
-      expect(playPauseButton.querySelector(".fa-play")).toBeInTheDocument();
+      expect(canvas.getByRole("button", { name: "Play" })).toBeInTheDocument();
     });
   },
 };
