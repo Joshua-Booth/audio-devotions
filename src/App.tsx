@@ -1,7 +1,6 @@
 import { Component } from "react";
 import ReactPlayer from "react-player";
 
-// Utilities
 import {
   getDate,
   getSources,
@@ -10,7 +9,6 @@ import {
   toggleColour,
 } from "./utils";
 
-// Styles
 import "./App.css";
 
 class App extends Component {

@@ -1,7 +1,6 @@
 import { render } from "@testing-library/react";
 import { axe } from "jest-axe";
 
-// Component
 import App from "./App";
 
 it("renders today's date", () => {
