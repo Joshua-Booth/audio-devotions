@@ -10,6 +10,21 @@ const preview: Preview = {
       test: "error",
     },
   },
+  decorators: [
+    (Story) => {
+      // Apply body classes for Tailwind base styles (matching index.html)
+      document.body.classList.add(
+        "bg-white",
+        "text-black",
+        "dark:bg-black",
+        "dark:text-white",
+        "antialiased",
+        "font-sans",
+        "m-0"
+      );
+      return Story();
+    },
+  ],
 };
 
 export default preview;

@@ -152,7 +152,7 @@ export const NavigateToLastItem: Story = {
     });
 
     // Forward button should be hidden (at last item)
-    expect(forwardButton).toHaveClass("hide");
+    expect(forwardButton).toHaveClass("invisible");
   },
 };
 
@@ -181,8 +181,8 @@ export const DelayedSourceShowsDifferentDate: Story = {
 
     // Date should be different (yesterday) for delayed source
     // The date element should NOT show today's date
-    const dateElement = canvas.getByRole("heading", { level: 2 });
-    expect(dateElement.textContent).not.toBe(todayStr);
+    const dateElement = canvasElement.querySelector("p");
+    expect(dateElement?.textContent).not.toBe(todayStr);
   },
 };
 
@@ -209,11 +209,9 @@ export const SeekerInteraction: Story = {
 export const AudioElementLoads: Story = {
   tags: ["!dev"],
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
     // Verify the audio element exists with a source
     await waitFor(() => {
-      const audioElement = canvas.getByRole("main").querySelector("audio");
+      const audioElement = canvasElement.querySelector("audio");
       expect(audioElement).toBeInTheDocument();
       expect(audioElement?.src).toContain(".mp3");
     });
@@ -227,21 +225,25 @@ export const ChangeColourTheme: Story = {
 
     const colourButton = canvas.getByRole("button", { name: "Change Colour" });
 
-    // Click to change colour
+    // Ensure we start in light mode
+    document.documentElement.classList.remove("dark");
+    localStorage.removeItem("theme");
+
+    // Click to change to dark mode
     await userEvent.click(colourButton);
 
-    // Body style should have changed
+    // Document should have dark class
     await waitFor(() => {
-      expect(document.body.style.color).toBe("white");
-      expect(document.body.style.backgroundColor).toBe("black");
+      expect(document.documentElement.classList.contains("dark")).toBe(true);
+      expect(localStorage.getItem("theme")).toBe("dark");
     });
 
-    // Click again to revert
+    // Click again to revert to light mode
     await userEvent.click(colourButton);
 
     await waitFor(() => {
-      expect(document.body.style.color).toBe("black");
-      expect(document.body.style.backgroundColor).toBe("white");
+      expect(document.documentElement.classList.contains("dark")).toBe(false);
+      expect(localStorage.getItem("theme")).toBe("light");
     });
   },
 };
