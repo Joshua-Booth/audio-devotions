@@ -37,6 +37,7 @@ _Note: The source must update with each day as a daily devotional._
 - [React](https://react.dev/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Vite](https://vite.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
 
 ## Author
 
