@@ -49,7 +49,9 @@ class App extends Component {
 
   handleStop = () => {
     this.setState({ playing: false });
-    this.player?.seekTo(0);
+    if (this.player) {
+      this.player.currentTime = 0;
+    }
   };
 
   handleToggleLight = () => {
@@ -100,15 +102,20 @@ class App extends Component {
     this.setState({ played: parseFloat(e.target.value) });
   };
 
-  handleSeekMouseUp = (e: any) => {
+  handleSeekMouseUp = (e: React.MouseEvent<HTMLInputElement>) => {
     this.setState({ seeking: false });
-    this.player?.seekTo(parseFloat(e.target.value));
+    if (this.player) {
+      this.player.currentTime =
+        parseFloat((e.target as HTMLInputElement).value) * this.player.duration;
+    }
   };
 
-  handleProgress = (state: any) => {
+  handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     // Only update time slider if not currently seeking
     if (!this.state.seeking) {
-      this.setState(state);
+      const target = e.target as HTMLVideoElement;
+      const played = target.currentTime / target.duration || 0;
+      this.setState({ played });
     }
   };
 
@@ -116,11 +123,12 @@ class App extends Component {
     this.setState({ playing: this.state.loop });
   };
 
-  handleDuration = (duration: typeof this.state.duration) => {
-    this.setState({ duration });
+  handleDurationChange = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const target = e.target as HTMLVideoElement;
+    this.setState({ duration: target.duration });
   };
 
-  ref = (player: ReactPlayer) => {
+  ref = (player: HTMLVideoElement | null) => {
     this.player = player;
   };
 
@@ -148,7 +156,7 @@ class App extends Component {
     }
   };
 
-  player: ReactPlayer | undefined;
+  player: HTMLVideoElement | null = null;
 
   componentDidMount() {
     this.setState(
@@ -221,12 +229,7 @@ class App extends Component {
               className="react-player"
               width="100%"
               height="100%"
-              url={url ?? undefined}
-              config={{
-                file: {
-                  forceAudio: true,
-                },
-              }}
+              src={url ?? undefined}
               playing={playing}
               controls={controls}
               light={light}
@@ -235,8 +238,8 @@ class App extends Component {
               onPlay={this.handlePlay}
               onPause={this.handlePause}
               onEnded={this.handleEnded}
-              onProgress={this.handleProgress}
-              onDuration={this.handleDuration}
+              onTimeUpdate={this.handleTimeUpdate}
+              onDurationChange={this.handleDurationChange}
             />
           </div>
 
