@@ -1,1 +1,1 @@
-npm run prettier -- --check
+pnpm format:check
