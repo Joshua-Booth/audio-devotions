@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 
 import {
@@ -9,220 +9,187 @@ import {
   toggleColour,
 } from "./utils";
 
-interface AppState {
-  url: string | null;
-  currentIndex: number;
-  urls: string[] | null;
-  showForward: boolean;
-  showBackward: boolean;
-  playing: boolean;
-  played: number;
-  seeking: boolean;
-}
+function App() {
+  const [url, setUrl] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [urls] = useState<string[] | null>(getSources);
+  const [showForward, setShowForward] = useState(true);
+  const [showBackward, setShowBackward] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [played, setPlayed] = useState(0);
+  const [seeking, setSeeking] = useState(false);
 
-class App extends Component<Record<string, never>, AppState> {
-  state: AppState = {
-    url: null,
-    currentIndex: 0,
-    urls: getSources(),
-    showForward: true,
-    showBackward: false,
-    playing: false,
-    played: 0,
-    seeking: false,
+  const playerRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (urls) {
+      setUrl(urls[0]);
+      setPlayed(0);
+    }
+  }, [urls]);
+
+  const load = (newUrl: string) => {
+    setUrl(newUrl);
+    setPlayed(0);
   };
 
-  load = (url: string) => {
-    this.setState({
-      url,
-      played: 0,
-    });
+  const handlePlayPause = () => {
+    setPlaying((prev) => !prev);
   };
 
-  handlePlayPause = () => {
-    this.setState((prevState) => ({ playing: !prevState.playing }));
-  };
-
-  handleStop = () => {
-    this.setState({ playing: false });
-    if (this.player) {
-      this.player.currentTime = 0;
+  const handleStop = () => {
+    setPlaying(false);
+    if (playerRef.current) {
+      playerRef.current.currentTime = 0;
     }
   };
 
-  handleSeekMouseDown = () => {
-    this.setState({ seeking: true });
+  const handleSeekMouseDown = () => {
+    setSeeking(true);
   };
 
-  handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ played: Number.parseFloat(e.target.value) });
+  const handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPlayed(Number.parseFloat(e.target.value));
   };
 
-  handleSeekMouseUp = (e: React.MouseEvent<HTMLInputElement>) => {
-    this.setState({ seeking: false });
-    if (this.player && Number.isFinite(this.player.duration)) {
-      this.player.currentTime =
+  const handleSeekMouseUp = (e: React.MouseEvent<HTMLInputElement>) => {
+    setSeeking(false);
+    const player = playerRef.current;
+    if (player && Number.isFinite(player.duration)) {
+      player.currentTime =
         Number.parseFloat((e.target as HTMLInputElement).value) *
-        this.player.duration;
+        player.duration;
     }
   };
 
-  handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     // Only update time slider if not currently seeking
-    if (!this.state.seeking) {
+    if (!seeking) {
       const target = e.target as HTMLVideoElement;
-      const played = target.currentTime / target.duration || 0;
-      this.setState({ played });
+      const playedFraction = target.currentTime / target.duration || 0;
+      setPlayed(playedFraction);
     }
   };
 
-  ref = (player: HTMLVideoElement | null) => {
-    this.player = player;
-  };
-
-  getDateTitle = () => {
+  const getDateTitle = () => {
     const { date, year, dayBehindMonth, dayBehindToday } = getDate();
     const sourceNames = getSourceNames();
     const delayedSourceNames = getDelayedSourceNames();
 
     let audioDate = date.toString();
-    if (delayedSourceNames.includes(sourceNames[this.state.currentIndex])) {
+    if (delayedSourceNames.includes(sourceNames[currentIndex])) {
       audioDate = `${year}-${dayBehindMonth}-${dayBehindToday}`;
     }
 
     return `${audioDate}`;
   };
 
-  getTitle = () => {
+  const getTitle = () => {
     const sourceNames = getSourceNames();
-    return sourceNames[this.state.currentIndex];
+    return sourceNames[currentIndex];
   };
 
-  loadInitial = () => {
-    if (this.state.urls) {
-      this.load(this.state.urls[0]);
-    }
-  };
-
-  player: HTMLVideoElement | null = null;
-
-  componentDidMount() {
-    this.loadInitial();
-  }
-
-  handleBackward = () => {
-    const { urls, currentIndex } = this.state;
-
+  const handleBackward = () => {
     if (!urls) return;
 
     if (currentIndex > 0) {
-      this.load(urls[currentIndex - 1]);
-      if (currentIndex - 1 === 0) {
-        this.setState({ showBackward: false });
-      }
-      this.setState({ currentIndex: currentIndex - 1, showForward: true });
+      const newIndex = currentIndex - 1;
+      load(urls[newIndex]);
+      setCurrentIndex(newIndex);
+      setShowBackward(newIndex > 0);
+      setShowForward(true);
     }
   };
 
-  handleForward = () => {
-    const { urls, currentIndex } = this.state;
-
+  const handleForward = () => {
     if (!urls) return;
 
     if (currentIndex < urls.length - 1) {
-      this.load(urls[currentIndex + 1]);
-      if (currentIndex + 1 === urls.length - 1) {
-        this.setState({ showForward: false });
-      }
-      this.setState({ currentIndex: currentIndex + 1, showBackward: true });
+      const newIndex = currentIndex + 1;
+      load(urls[newIndex]);
+      setCurrentIndex(newIndex);
+      setShowForward(newIndex < urls.length - 1);
+      setShowBackward(true);
     }
   };
 
-  render() {
-    const { url, showForward, showBackward, playing, played } = this.state;
+  return (
+    <div role="main" className="app">
+      <section className="section">
+        <div className="player-wrapper">
+          <ReactPlayer
+            ref={playerRef}
+            className="react-player"
+            width="100%"
+            height="100%"
+            src={url ?? undefined}
+            playing={playing}
+            onTimeUpdate={handleTimeUpdate}
+          />
+        </div>
 
-    return (
-      <div role="main" className="app">
-        <section className="section">
-          <div className="player-wrapper">
-            <ReactPlayer
-              ref={this.ref}
-              className="react-player"
-              width="100%"
-              height="100%"
-              src={url ?? undefined}
-              playing={playing}
-              onTimeUpdate={this.handleTimeUpdate}
-            />
+        <button id="toggle-colour" onClick={toggleColour}>
+          Change Colour
+        </button>
+
+        <h2 id="date" className="title">
+          {getDateTitle()}
+        </h2>
+
+        <h1 id="reading" className="title">
+          {getTitle()}
+        </h1>
+
+        <div id="media-controls">
+          <input
+            type="range"
+            min={0}
+            max={0.999999}
+            step="any"
+            value={played}
+            onMouseDown={handleSeekMouseDown}
+            onChange={handleSeekChange}
+            onMouseUp={handleSeekMouseUp}
+            aria-label="Seeker"
+          />
+
+          <div>
+            <button
+              className={`button ${showBackward ? "" : "hide"}`}
+              onClick={handleBackward}
+              aria-label="Skip Backward"
+            >
+              <i className="fa fa-fast-backward"></i>
+            </button>
+
+            <button className="button" onClick={handleStop} aria-label="Stop">
+              <i className="fa fa-stop"></i>
+            </button>
+
+            <button
+              className="button"
+              onClick={handlePlayPause}
+              aria-label="Toggle Play/Pause"
+            >
+              {playing ? (
+                <i className="fa fa-pause"></i>
+              ) : (
+                <i className="fa fa-play"></i>
+              )}
+            </button>
+
+            <button
+              className={`button ${showForward ? "" : "hide"}`}
+              onClick={handleForward}
+              aria-label="Skip Forward"
+            >
+              <i className="fa fa-fast-forward"></i>
+            </button>
           </div>
-
-          <button id="toggle-colour" onClick={toggleColour}>
-            Change Colour
-          </button>
-
-          <h2 id="date" className="title">
-            {this.getDateTitle()}
-          </h2>
-
-          <h1 id="reading" className="title">
-            {this.getTitle()}
-          </h1>
-
-          <div id="media-controls">
-            <input
-              type="range"
-              min={0}
-              max={0.999999}
-              step="any"
-              value={played}
-              onMouseDown={this.handleSeekMouseDown}
-              onChange={this.handleSeekChange}
-              onMouseUp={this.handleSeekMouseUp}
-              aria-label="Seeker"
-            />
-
-            <div>
-              <button
-                className={`button ${showBackward ? "" : "hide"}`}
-                onClick={this.handleBackward}
-                aria-label="Skip Backward"
-              >
-                <i className="fa fa-fast-backward"></i>
-              </button>
-
-              <button
-                className="button"
-                onClick={this.handleStop}
-                aria-label="Stop"
-              >
-                <i className="fa fa-stop"></i>
-              </button>
-
-              <button
-                className="button"
-                onClick={this.handlePlayPause}
-                aria-label="Toggle Play/Pause"
-              >
-                {playing ? (
-                  <i className="fa fa-pause"></i>
-                ) : (
-                  <i className="fa fa-play"></i>
-                )}
-              </button>
-
-              <button
-                className={`button ${showForward ? "" : "hide"}`}
-                onClick={this.handleForward}
-                aria-label="Skip Forward"
-              >
-                <i className="fa fa-fast-forward"></i>
-              </button>
-            </div>
-          </div>
-        </section>
-      </div>
-    );
-  }
+        </div>
+      </section>
+    </div>
+  );
 }
 
 export default App;

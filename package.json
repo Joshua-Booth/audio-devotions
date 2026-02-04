@@ -8,6 +8,8 @@
     "build": "vite build",
     "serve": "vite preview",
     "test": "vitest",
+    "test:storybook": "vitest --project=storybook",
+    "test:unit": "vitest --project=unit",
     "test:ui": "vitest --ui",
     "lint": "oxlint --fix",
     "lint:check": "oxlint",
