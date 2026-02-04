@@ -9,8 +9,6 @@ import {
   toggleColour,
 } from "./utils";
 
-import "./App.css";
-
 interface AppState {
   url: string | null;
   currentIndex: number;
