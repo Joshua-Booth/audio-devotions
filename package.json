@@ -31,6 +31,11 @@
     "react-dom": "^18.3.1",
     "react-player": "^3.4.0"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^14.3.1",
