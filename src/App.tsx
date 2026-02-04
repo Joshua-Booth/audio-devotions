@@ -35,7 +35,7 @@ class App extends Component<Record<string, never>, AppState> {
   state: AppState = {
     url: null,
     currentIndex: 0,
-    urls: null as null | string[],
+    urls: getSources(),
     showForward: true,
     showBackward: false,
     pip: false,
@@ -178,12 +178,7 @@ class App extends Component<Record<string, never>, AppState> {
   player: HTMLVideoElement | null = null;
 
   componentDidMount() {
-    this.setState(
-      {
-        urls: getSources(),
-      },
-      this.loadInitial
-    );
+    this.loadInitial();
   }
 
   handleBackward = () => {
