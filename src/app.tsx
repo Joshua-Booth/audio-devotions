@@ -8,7 +8,7 @@ import {
 import ReactPlayer from "react-player";
 
 import { useAudioPlayer } from "./use-audio-player";
-import { toggleColour } from "./utils";
+import { toggleColour } from "./theme";
 
 export function App() {
   const {
@@ -41,16 +41,15 @@ export function App() {
         </button>
       </header>
 
-      <div className="hidden">
-        <ReactPlayer
-          ref={playerRef}
-          width="100%"
-          height="100%"
-          src={url ?? undefined}
-          playing={playing}
-          onTimeUpdate={handleTimeUpdate}
-        />
-      </div>
+      <ReactPlayer
+        ref={playerRef}
+        width="100%"
+        height="100%"
+        src={url ?? undefined}
+        playing={playing}
+        onTimeUpdate={handleTimeUpdate}
+        className="hidden"
+      />
 
       <h1 className="absolute text-center top-50 left-0 right-0 text-[60px] font-[arial] m-0 lg:text-[500%] dark:text-white">
         {title}

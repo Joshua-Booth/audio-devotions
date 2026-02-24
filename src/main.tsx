@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 
 import { App } from "./app";
-import { initializeTheme } from "./utils";
+import { initializeTheme } from "./theme";
 
 import "./index.css";
 

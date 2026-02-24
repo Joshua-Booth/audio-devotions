@@ -5,7 +5,7 @@ import {
   getDelayedSourceNames,
   getSourceNames,
   getSources,
-} from "./utils";
+} from "./sources";
 
 export function useAudioPlayer() {
   const [urls] = useState<string[] | null>(getSources);

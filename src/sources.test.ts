@@ -4,7 +4,7 @@ import {
   getSources,
   getSourceNames,
   getDelayedSourceNames,
-} from "./utils";
+} from "./sources";
 
 describe("getDate", () => {
   it("returns current date information", () => {
@@ -53,5 +53,3 @@ describe("getDelayedSourceNames", () => {
     expect(delayed).toContain("Micheal Youssef");
   });
 });
-
-// toggleColour is tested in Storybook (ChangeColourTheme story) since it requires DOM
