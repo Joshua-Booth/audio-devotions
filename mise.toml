@@ -1,2 +1,93 @@
+min_version = "2024.9.5"
+
 [tools]
 node = "24.13.0"
+pnpm = "10.21.0"
+
+[env]
+_.path = ["./node_modules/.bin"]
+
+[tasks.dev]
+description = "Start development server"
+alias = "d"
+run = "vite"
+
+[tasks.build]
+description = "Build the application"
+alias = "b"
+run = "vite build"
+
+[tasks.test]
+description = "Run unit and Storybook tests"
+alias = "t"
+run = "vitest"
+
+[tasks."test:unit"]
+description = "Run unit tests only"
+alias = "tu"
+run = "vitest --project=unit"
+
+[tasks."test:storybook"]
+description = "Run Storybook component tests"
+alias = "tsb"
+run = "vitest --project=storybook"
+
+[tasks."test:ui"]
+description = "Open Vitest UI"
+alias = "tui"
+run = "vitest --ui"
+
+[tasks.format]
+description = "Format code"
+alias = "f"
+run = "oxfmt --write ."
+
+[tasks."format:check"]
+description = "Check code formatting"
+alias = "fc"
+run = "oxfmt ."
+
+[tasks.lint]
+description = "Lint and fix code"
+alias = "l"
+run = "oxlint --fix"
+
+[tasks."lint:check"]
+description = "Check code with Oxlint"
+alias = "lc"
+run = "oxlint"
+
+[tasks.typecheck]
+description = "Run TypeScript type checking"
+alias = "tt"
+run = "tsc --noEmit"
+
+[tasks.storybook]
+description = "Start Storybook dev server"
+alias = "sb"
+run = "storybook dev -p 6006"
+
+[tasks."storybook:build"]
+description = "Build Storybook static site"
+alias = "sbb"
+run = "storybook build"
+
+[tasks.knip]
+description = "Find unused files, dependencies, and exports"
+alias = "k"
+run = "knip --no-config-hints"
+
+[tasks.spell]
+description = "Check spelling"
+alias = "sp"
+run = "cspell ."
+
+[tasks.audit]
+description = "Run security audit for high-severity vulnerabilities"
+run = "pnpm audit --audit-level=high"
+
+[tasks.check]
+description = "Run all CI checks locally"
+alias = "c"
+depends = ["format:check", "lint:check", "typecheck", "knip", "spell", "audit"]
+run = "vitest run"

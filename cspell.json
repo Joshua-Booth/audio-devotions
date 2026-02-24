@@ -1,0 +1,41 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en,en-GB",
+  "dictionaries": [
+    "typescript",
+    "node",
+    "npm",
+    "html",
+    "css",
+    "software-terms",
+    "fullstack",
+    "companies",
+    "fonts",
+    "filetypes",
+    "git",
+    "bash",
+    "shellscript"
+  ],
+  "files": ["src/**/*.{ts,tsx,css}", "**/*.md", "*.toml", "package.json"],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/coverage/**",
+    "**/pnpm-lock.yaml",
+    "**/storybook-static/**"
+  ],
+  "words": [
+    "autodocs",
+    "commitlint",
+    "joshuabooth",
+    "joshuaboothnz",
+    "Micheal",
+    "nosniff",
+    "oxfmt",
+    "oxlint",
+    "Spurgeon",
+    "Youssef"
+  ]
+}

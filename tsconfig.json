@@ -3,7 +3,6 @@
     "target": "ESNext",
     "jsx": "react-jsx",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "useDefineForClassFields": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
@@ -11,10 +10,12 @@
     "allowJs": false,
     "strict": true,
     "noEmit": true,
-    "allowSyntheticDefaultImports": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
     "esModuleInterop": false,
     "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
     "skipLibCheck": true
   },
   "include": ["./src", "./.storybook"]
