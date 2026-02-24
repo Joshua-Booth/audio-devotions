@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within, userEvent, waitFor } from "storybook/test";
-import App from "./App";
+import { App } from "./app";
 
 const meta: Meta<typeof App> = {
   component: App,

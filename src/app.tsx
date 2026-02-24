@@ -16,7 +16,7 @@ import {
   toggleColour,
 } from "./utils";
 
-function App() {
+export function App() {
   const [url, setUrl] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [urls] = useState<string[] | null>(getSources);
@@ -29,8 +29,9 @@ function App() {
   const playerRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
-    if (urls) {
-      setUrl(urls[0]);
+    const firstUrl = urls?.[0];
+    if (firstUrl) {
+      setUrl(firstUrl);
       setPlayed(0);
     }
   }, [urls]);
@@ -84,16 +85,17 @@ function App() {
     const delayedSourceNames = getDelayedSourceNames();
 
     let audioDate = date.toString();
-    if (delayedSourceNames.includes(sourceNames[currentIndex])) {
+    const sourceName = sourceNames[currentIndex];
+    if (sourceName && delayedSourceNames.includes(sourceName)) {
       audioDate = `${year}-${dayBehindMonth}-${dayBehindToday}`;
     }
 
-    return `${audioDate}`;
+    return audioDate;
   };
 
   const getTitle = () => {
     const sourceNames = getSourceNames();
-    return sourceNames[currentIndex];
+    return sourceNames[currentIndex] ?? "";
   };
 
   const handleBackward = () => {
@@ -101,7 +103,9 @@ function App() {
 
     if (currentIndex > 0) {
       const newIndex = currentIndex - 1;
-      load(urls[newIndex]);
+      const newUrl = urls[newIndex];
+      if (!newUrl) return;
+      load(newUrl);
       setCurrentIndex(newIndex);
       setShowBackward(newIndex > 0);
       setShowForward(true);
@@ -113,7 +117,9 @@ function App() {
 
     if (currentIndex < urls.length - 1) {
       const newIndex = currentIndex + 1;
-      load(urls[newIndex]);
+      const newUrl = urls[newIndex];
+      if (!newUrl) return;
+      load(newUrl);
       setCurrentIndex(newIndex);
       setShowForward(newIndex < urls.length - 1);
       setShowBackward(true);
@@ -201,5 +207,3 @@ function App() {
     </main>
   );
 }
-
-export default App;
