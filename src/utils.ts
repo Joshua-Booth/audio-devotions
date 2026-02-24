@@ -15,23 +15,28 @@ function formatPeriod(period: number) {
   }
 }
 
-/**
- * @typedef {object} Date
- * @property {year} KeyNameHere - Brief description of the key here.
- * @property {number} year The current year (e.g. 2021)
- * @property {string} shortYear The shortened current year (e.g. 21)
- * @property {string} month The current month (e.g. 03)
- * @property {number} day Today's day number (e.g. 29)
- * @property {string} date Date string (e.g. 2021-3-29)
- * @property {number} dayBehindToday Yesterday's day number (e.g. 28)
- * @property {string} dayBehindMonth Yesterday's month number (e.g. 03)
- */
+interface DateInfo {
+  /** The current year (e.g. 2021) */
+  year: number;
+  /** The shortened current year (e.g. "21") */
+  shortYear: string;
+  /** The current month, zero-padded (e.g. "03") */
+  month: string;
+  /** Today's day number, zero-padded (e.g. "29") */
+  day: string;
+  /** Date string (e.g. "2021-3-29") */
+  date: string;
+  /** Yesterday's day number, zero-padded (e.g. "28") */
+  dayBehindToday: string;
+  /** Yesterday's month number, zero-padded (e.g. "03") */
+  dayBehindMonth: string;
+}
 
 /**
- * Generate and return data information.
- * @returns {Date} The current date data
+ * Generate and return date information.
+ * @returns The current date data
  */
-export function getDate() {
+export function getDate(): DateInfo {
   const today = new Date();
 
   const year = today.getFullYear();
@@ -69,7 +74,7 @@ export function getDate() {
  * Get a list of source urls.
  * @example
  * getSources()
- * @returns {Array} List of source urls
+ * @returns List of source urls
  */
 export function getSources() {
   const { year, shortYear, month, day, dayBehindToday, dayBehindMonth } =
@@ -89,7 +94,7 @@ export function getSources() {
  * Get a list of source names.
  * @example
  * getSourceNames()
- * @returns {Array} List of source names
+ * @returns List of source names
  */
 export function getSourceNames() {
   return [
@@ -106,7 +111,7 @@ export function getSourceNames() {
  * Get a list of source names that are delayed by more than a day.
  * @example
  * getDelayedSourceNames()
- * @returns {Array} List of delayed source names
+ * @returns List of delayed source names
  */
 export function getDelayedSourceNames() {
   return ["Micheal Youssef"];
