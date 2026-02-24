@@ -5,126 +5,30 @@ import {
   SkipForwardIcon,
   StopIcon,
 } from "@phosphor-icons/react";
-import { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 
-import {
-  getDate,
-  getDelayedSourceNames,
-  getSourceNames,
-  getSources,
-  toggleColour,
-} from "./utils";
+import { useAudioPlayer } from "./use-audio-player";
+import { toggleColour } from "./utils";
 
 export function App() {
-  const [url, setUrl] = useState<string | null>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [urls] = useState<string[] | null>(getSources);
-  const [showForward, setShowForward] = useState(true);
-  const [showBackward, setShowBackward] = useState(false);
-  const [playing, setPlaying] = useState(false);
-  const [played, setPlayed] = useState(0);
-  const [seeking, setSeeking] = useState(false);
-
-  const playerRef = useRef<HTMLVideoElement | null>(null);
-
-  useEffect(() => {
-    const firstUrl = urls?.[0];
-    if (firstUrl) {
-      setUrl(firstUrl);
-      setPlayed(0);
-    }
-  }, [urls]);
-
-  const load = (newUrl: string) => {
-    setUrl(newUrl);
-    setPlayed(0);
-  };
-
-  const handlePlayPause = () => {
-    setPlaying((prev) => !prev);
-  };
-
-  const handleStop = () => {
-    setPlaying(false);
-    if (playerRef.current) {
-      playerRef.current.currentTime = 0;
-    }
-  };
-
-  const handleSeekMouseDown = () => {
-    setSeeking(true);
-  };
-
-  const handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPlayed(Number.parseFloat(e.target.value));
-  };
-
-  const handleSeekMouseUp = (e: React.MouseEvent<HTMLInputElement>) => {
-    setSeeking(false);
-    const player = playerRef.current;
-    if (player && Number.isFinite(player.duration)) {
-      player.currentTime =
-        Number.parseFloat((e.target as HTMLInputElement).value) *
-        player.duration;
-    }
-  };
-
-  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
-    // Only update time slider if not currently seeking
-    if (!seeking) {
-      const target = e.target as HTMLVideoElement;
-      const playedFraction = target.currentTime / target.duration || 0;
-      setPlayed(playedFraction);
-    }
-  };
-
-  const getDateTitle = () => {
-    const { date, year, dayBehindMonth, dayBehindToday } = getDate();
-    const sourceNames = getSourceNames();
-    const delayedSourceNames = getDelayedSourceNames();
-
-    let audioDate = date.toString();
-    const sourceName = sourceNames[currentIndex];
-    if (sourceName && delayedSourceNames.includes(sourceName)) {
-      audioDate = `${year}-${dayBehindMonth}-${dayBehindToday}`;
-    }
-
-    return audioDate;
-  };
-
-  const getTitle = () => {
-    const sourceNames = getSourceNames();
-    return sourceNames[currentIndex] ?? "";
-  };
-
-  const handleBackward = () => {
-    if (!urls) return;
-
-    if (currentIndex > 0) {
-      const newIndex = currentIndex - 1;
-      const newUrl = urls[newIndex];
-      if (!newUrl) return;
-      load(newUrl);
-      setCurrentIndex(newIndex);
-      setShowBackward(newIndex > 0);
-      setShowForward(true);
-    }
-  };
-
-  const handleForward = () => {
-    if (!urls) return;
-
-    if (currentIndex < urls.length - 1) {
-      const newIndex = currentIndex + 1;
-      const newUrl = urls[newIndex];
-      if (!newUrl) return;
-      load(newUrl);
-      setCurrentIndex(newIndex);
-      setShowForward(newIndex < urls.length - 1);
-      setShowBackward(true);
-    }
-  };
+  const {
+    playerRef,
+    url,
+    playing,
+    played,
+    title,
+    dateTitle,
+    showForward,
+    showBackward,
+    handlePlayPause,
+    handleStop,
+    handleSeekMouseDown,
+    handleSeekChange,
+    handleSeekMouseUp,
+    handleTimeUpdate,
+    handleForward,
+    handleBackward,
+  } = useAudioPlayer();
 
   return (
     <main>
@@ -148,12 +52,12 @@ export function App() {
         />
       </div>
 
-      <h1 className="absolute text-center top-[200px] left-0 right-0 text-[60px] font-[arial] m-0 lg:text-[500%] dark:text-white">
-        {getTitle()}
+      <h1 className="absolute text-center top-50 left-0 right-0 text-[60px] font-[arial] m-0 lg:text-[500%] dark:text-white">
+        {title}
       </h1>
 
       <p className="text-gray-500 text-[300%] font-normal text-center m-0 dark:text-gray-400">
-        {getDateTitle()}
+        {dateTitle}
       </p>
 
       <div className="text-center h-[20vh] absolute bottom-[20%] mx-auto left-0 right-0 flex flex-col gap-20">
