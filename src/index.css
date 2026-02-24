@@ -12,12 +12,13 @@
     @apply bg-white mx-[2%] w-[20%] py-2.5 px-2.5 border border-black rounded-[20px] hover:bg-gray-500 lg:py-5 dark:bg-gray-800 dark:hover:bg-gray-600;
 
     & svg {
-      @apply w-[60px] h-[60px] lg:w-[140px] lg:h-[140px] inline;
+      @apply size-15 lg:size-35 inline;
     }
   }
 
   .range-slider {
     -webkit-appearance: none;
+    appearance: none;
     display: block;
     margin: auto;
     width: 440px;
