@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   getDate,
@@ -76,7 +76,7 @@ export function useAudioPlayer() {
     }
   };
 
-  const handleBackward = () => {
+  const handleBackward = useCallback(() => {
     if (!urls) return;
 
     if (currentIndex > 0) {
@@ -86,9 +86,9 @@ export function useAudioPlayer() {
       load(newUrl);
       setCurrentIndex(newIndex);
     }
-  };
+  }, [urls, currentIndex]);
 
-  const handleForward = () => {
+  const handleForward = useCallback(() => {
     if (!urls) return;
 
     if (currentIndex < urls.length - 1) {
@@ -98,7 +98,34 @@ export function useAudioPlayer() {
       load(newUrl);
       setCurrentIndex(newIndex);
     }
-  };
+  }, [urls, currentIndex]);
+
+  useEffect(() => {
+    if (!("mediaSession" in navigator)) return;
+
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title,
+      artist: "Audio Devotions",
+    });
+
+    navigator.mediaSession.setActionHandler("play", () => setPlaying(true));
+    navigator.mediaSession.setActionHandler("pause", () => setPlaying(false));
+    navigator.mediaSession.setActionHandler(
+      "nexttrack",
+      showForward ? handleForward : null
+    );
+    navigator.mediaSession.setActionHandler(
+      "previoustrack",
+      showBackward ? handleBackward : null
+    );
+
+    return () => {
+      navigator.mediaSession.setActionHandler("play", null);
+      navigator.mediaSession.setActionHandler("pause", null);
+      navigator.mediaSession.setActionHandler("nexttrack", null);
+      navigator.mediaSession.setActionHandler("previoustrack", null);
+    };
+  }, [title, showForward, showBackward, handleForward, handleBackward]);
 
   return {
     playerRef,
