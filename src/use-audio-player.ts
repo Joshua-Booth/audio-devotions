@@ -7,12 +7,16 @@ import {
   getSources,
 } from "./sources";
 
+const SILENT_AUDIO =
+  "data:audio/wav;base64,UklGRiUAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQEAAACA";
+
 export function useAudioPlayer() {
   const [urls] = useState<string[] | null>(getSources);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [url, setUrl] = useState<string | null>(urls?.[0] ?? null);
   const [playing, setPlaying] = useState(false);
   const [played, setPlayed] = useState(0);
+  const [errored, setErrored] = useState(false);
 
   const seekingRef = useRef(false);
   const playerRef = useRef<HTMLVideoElement | null>(null);
@@ -37,6 +41,7 @@ export function useAudioPlayer() {
   const load = (newUrl: string) => {
     setUrl(newUrl);
     setPlayed(0);
+    setErrored(false);
   };
 
   const handlePlayPause = () => {
@@ -69,11 +74,10 @@ export function useAudioPlayer() {
   };
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
-    if (!seekingRef.current) {
-      const target = e.target as HTMLVideoElement;
-      const playedFraction = target.currentTime / target.duration || 0;
-      setPlayed(playedFraction);
-    }
+    if (seekingRef.current || errored) return;
+    const target = e.target as HTMLVideoElement;
+    const playedFraction = target.currentTime / target.duration || 0;
+    setPlayed(playedFraction);
   };
 
   const handleBackward = useCallback(() => {
@@ -100,6 +104,14 @@ export function useAudioPlayer() {
     }
   }, [urls, currentIndex]);
 
+  const handleError = useCallback(() => {
+    console.warn(`[Audio Devotions] Failed to load: ${title}`, url);
+    setErrored(true);
+    setPlayed(0);
+    setUrl(SILENT_AUDIO);
+    setPlaying(true);
+  }, [title, url]);
+
   useEffect(() => {
     if (!("mediaSession" in navigator)) return;
 
@@ -108,8 +120,14 @@ export function useAudioPlayer() {
       artist: "Audio Devotions",
     });
 
-    navigator.mediaSession.setActionHandler("play", () => setPlaying(true));
-    navigator.mediaSession.setActionHandler("pause", () => setPlaying(false));
+    navigator.mediaSession.setActionHandler(
+      "play",
+      errored ? null : () => setPlaying(true)
+    );
+    navigator.mediaSession.setActionHandler(
+      "pause",
+      errored ? null : () => setPlaying(false)
+    );
     navigator.mediaSession.setActionHandler(
       "nexttrack",
       showForward ? handleForward : null
@@ -125,13 +143,14 @@ export function useAudioPlayer() {
       navigator.mediaSession.setActionHandler("nexttrack", null);
       navigator.mediaSession.setActionHandler("previoustrack", null);
     };
-  }, [title, showForward, showBackward, handleForward, handleBackward]);
+  }, [title, errored, showForward, showBackward, handleForward, handleBackward]);
 
   return {
     playerRef,
     url,
     playing,
     played,
+    errored,
     title,
     dateTitle,
     showForward,
@@ -144,5 +163,6 @@ export function useAudioPlayer() {
     handleTimeUpdate,
     handleForward,
     handleBackward,
+    handleError,
   };
 }

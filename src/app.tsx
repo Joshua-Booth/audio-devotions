@@ -16,6 +16,7 @@ export function App() {
     url,
     playing,
     played,
+    errored,
     title,
     dateTitle,
     showForward,
@@ -28,6 +29,7 @@ export function App() {
     handleTimeUpdate,
     handleForward,
     handleBackward,
+    handleError,
   } = useAudioPlayer();
 
   return (
@@ -41,15 +43,18 @@ export function App() {
         </button>
       </header>
 
-      <ReactPlayer
-        ref={playerRef}
-        width="100%"
-        height="100%"
-        src={url ?? undefined}
-        playing={playing}
-        onTimeUpdate={handleTimeUpdate}
-        className="hidden"
-      />
+      <div className="hidden">
+        <ReactPlayer
+          ref={playerRef}
+          width="100%"
+          height="100%"
+          src={url ?? undefined}
+          playing={playing}
+          loop={errored}
+          onTimeUpdate={handleTimeUpdate}
+          onError={handleError}
+        />
+      </div>
 
       <h1 className="absolute text-center top-50 left-0 right-0 text-[60px] font-[arial] m-0 lg:text-[500%] dark:text-white">
         {title}
@@ -82,16 +87,22 @@ export function App() {
             <SkipBackIcon weight="fill" />
           </button>
 
-          <button className="btn-media" onClick={handleStop} aria-label="Stop">
+          <button
+            className="btn-media"
+            onClick={handleStop}
+            disabled={errored}
+            aria-label="Stop"
+          >
             <StopIcon weight="fill" color="red" />
           </button>
 
           <button
             className="btn-media"
             onClick={handlePlayPause}
-            aria-label={playing ? "Pause" : "Play"}
+            disabled={errored}
+            aria-label={!errored && playing ? "Pause" : "Play"}
           >
-            {playing ? (
+            {!errored && playing ? (
               <PauseIcon weight="fill" />
             ) : (
               <PlayIcon weight="fill" color="green" />
