@@ -143,7 +143,14 @@ export function useAudioPlayer() {
       navigator.mediaSession.setActionHandler("nexttrack", null);
       navigator.mediaSession.setActionHandler("previoustrack", null);
     };
-  }, [title, errored, showForward, showBackward, handleForward, handleBackward]);
+  }, [
+    title,
+    errored,
+    showForward,
+    showBackward,
+    handleForward,
+    handleBackward,
+  ]);
 
   return {
     playerRef,
