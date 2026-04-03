@@ -9,10 +9,10 @@
 
 @layer components {
   .btn-media {
-    @apply bg-white mx-[2%] w-[20%] py-2.5 px-2.5 border border-black rounded-[20px] hover:bg-gray-500 lg:py-5 dark:bg-gray-800 dark:hover:bg-gray-600;
+    @apply bg-white mx-[2%] w-[20%] py-5 px-2.5 border border-black rounded-[20px] hover:bg-gray-500 lg:py-5 dark:bg-gray-800 dark:hover:bg-gray-600 inline-flex items-center justify-center;
 
     & svg {
-      @apply size-15 lg:size-35 inline;
+      @apply size-15 lg:size-35;
     }
   }
 
@@ -21,7 +21,7 @@
     appearance: none;
     display: block;
     margin: auto;
-    width: 440px;
+    width: min(80%, 440px);
   }
 
   .range-slider:focus {
@@ -55,17 +55,5 @@
 
   .range-slider:focus::-webkit-slider-runnable-track {
     background: var(--color-track-focus);
-  }
-
-  @media (max-width: 1024px) {
-    .range-slider {
-      width: 50%;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .range-slider {
-      width: 80%;
-    }
   }
 }
