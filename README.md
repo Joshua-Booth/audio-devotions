@@ -25,7 +25,7 @@ Run `pnpm build` to create a production build.
 
 #### Adding additional sources
 
-Inside [utils.ts](src/utils.ts):
+Inside [sources.ts](src/sources.ts):
 
 - Append to the list `getSourceNames` with the name of the source
 - Append to the list `getSources` with the link to the source.
