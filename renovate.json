@@ -81,6 +81,7 @@
   ],
 
   "vulnerabilityAlerts": {
+    "commitMessageSuffix": "",
     "enabled": true,
     "labels": ["dependencies", "security"],
     "schedule": ["at any time"],
