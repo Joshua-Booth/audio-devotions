@@ -1,55 +1,41 @@
 import { describe, it, expect } from "vitest";
-import {
-  getDate,
-  getSources,
-  getSourceNames,
-  getDelayedSourceNames,
-} from "./sources";
+import { getDevotions } from "./sources";
 
-describe("getDate", () => {
-  it("returns current date information", () => {
-    const result = getDate();
-    const today = new Date();
-
-    expect(result.year).toBe(today.getFullYear());
-    expect(result.date).toBe(
-      `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
-    );
+describe("getDevotions", () => {
+  it("lists the six devotions in playing order", () => {
+    expect(getDevotions().map((d) => d.name)).toEqual([
+      "Charles Spurgeon - Morning",
+      "Charles Spurgeon - Evening",
+      "Word For Today",
+      "Our Daily Bread",
+      "Faith's Checkbook",
+      "Micheal Youssef",
+    ]);
   });
 
-  it("formats single-digit months with leading zero", () => {
-    const result = getDate();
-    expect(result.month).toMatch(/^\d{2}$/);
+  it("builds each URL from the zero-padded date", () => {
+    const urls = getDevotions(new Date(2026, 2, 9)).map((d) => d.url);
+
+    expect(urls).toEqual([
+      "https://stream.biblegateway.com/media/32/morning-and-evening/0309m.mp3",
+      "https://stream.biblegateway.com/media/32/morning-and-evening/0309e.mp3",
+      "https://resources.vision.org.au/audio/thewordfortoday/20260309.mp3",
+      "https://dzxuyknqkmi1e.cloudfront.net/odb/2026/03/odb-03-09-26.mp3",
+      "https://mp3.sermonaudio.com/filearea/fcb0309/fcb0309.mp3",
+      "https://web.audio.ltw.org/2026/ltw20260308.mp3",
+    ]);
   });
 
-  it("formats single-digit days with leading zero", () => {
-    const result = getDate();
-    expect(result.day).toMatch(/^\d{2}$/);
-  });
-});
+  it("dates today's sources today and delayed sources yesterday", () => {
+    const today = new Date(2026, 9, 4);
+    const dates = getDevotions(today).map((d) => d.date.toDateString());
 
-describe("getSources", () => {
-  it("returns an array of 6 audio URLs", () => {
-    const sources = getSources();
-    expect(sources).toHaveLength(6);
-    sources.forEach((url) => {
-      expect(url).toContain(".mp3");
-    });
+    expect(dates.slice(0, 5)).toEqual(Array(5).fill(today.toDateString()));
+    expect(dates[5]).toBe(new Date(2026, 9, 3).toDateString());
   });
-});
 
-describe("getSourceNames", () => {
-  it("returns an array of 6 source names", () => {
-    const names = getSourceNames();
-    expect(names).toHaveLength(6);
-    expect(names[0]).toBe("Charles Spurgeon - Morning");
-    expect(names[5]).toBe("Micheal Youssef");
-  });
-});
-
-describe("getDelayedSourceNames", () => {
-  it("returns Micheal Youssef as delayed source", () => {
-    const delayed = getDelayedSourceNames();
-    expect(delayed).toContain("Micheal Youssef");
+  it("files a delayed recording under the year it's for", () => {
+    const [, , , , , youssef] = getDevotions(new Date(2027, 0, 1));
+    expect(youssef?.url).toBe("https://web.audio.ltw.org/2026/ltw20261231.mp3");
   });
 });

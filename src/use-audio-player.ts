@@ -1,116 +1,140 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  getDate,
-  getDelayedSourceNames,
-  getSourceNames,
-  getSources,
-} from "./sources";
+import { type Devotion, getDevotions } from "./sources";
 
-const SILENT_AUDIO =
-  "data:audio/wav;base64,UklGRiUAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQEAAACA";
+// A real .wav file, so ReactPlayer keeps rendering an <audio> element for it
+const KEEP_ALIVE_SILENCE = "/silence.wav";
+
+const isSameDay = (a?: Devotion, b?: Devotion) =>
+  a?.date.toDateString() === b?.date.toDateString();
 
 export function useAudioPlayer() {
-  const [urls] = useState<string[] | null>(getSources);
+  const [devotions, setDevotions] = useState(() => getDevotions());
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [url, setUrl] = useState<string | null>(urls?.[0] ?? null);
+  const [url, setUrl] = useState(devotions[0]?.url);
   const [playing, setPlaying] = useState(false);
-  const [played, setPlayed] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(Number.NaN);
   const [errored, setErrored] = useState(false);
 
-  const seekingRef = useRef(false);
   const playerRef = useRef<HTMLVideoElement | null>(null);
 
   // Derived values
-  const showForward = urls !== null && currentIndex < urls.length - 1;
-  const showBackward = currentIndex > 0;
-  const title = getSourceNames()[currentIndex] ?? "";
+  const { name: title, date } = devotions[currentIndex]!;
+  const hasPrevious = currentIndex > 0;
+  const hasNext = currentIndex < devotions.length - 1;
 
-  const dateTitle = (() => {
-    const { date, year, dayBehindMonth, dayBehindToday } = getDate();
-    const sourceNames = getSourceNames();
-    const delayedSourceNames = getDelayedSourceNames();
-
-    const sourceName = sourceNames[currentIndex];
-    if (sourceName && delayedSourceNames.includes(sourceName)) {
-      return `${year}-${dayBehindMonth}-${dayBehindToday}`;
-    }
-    return date.toString();
-  })();
-
-  const load = (newUrl: string) => {
+  const reset = useCallback((newUrl: string) => {
     setUrl(newUrl);
-    setPlayed(0);
+    setCurrentTime(0);
+    setDuration(Number.NaN);
     setErrored(false);
-  };
+  }, []);
 
-  const handlePlayPause = () => {
-    setPlaying((prev) => !prev);
-  };
-
-  const handleStop = () => {
-    setPlaying(false);
-    if (playerRef.current) {
-      playerRef.current.currentTime = 0;
-    }
-  };
-
-  const handleSeekMouseDown = () => {
-    seekingRef.current = true;
-  };
-
-  const handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPlayed(Number.parseFloat(e.target.value));
-  };
-
-  const handleSeekMouseUp = (e: React.MouseEvent<HTMLInputElement>) => {
-    seekingRef.current = false;
-    const player = playerRef.current;
-    if (player && Number.isFinite(player.duration)) {
-      player.currentTime =
-        Number.parseFloat((e.target as HTMLInputElement).value) *
-        player.duration;
-    }
-  };
-
-  const handleTimeUpdate = (e: React.SyntheticEvent<HTMLVideoElement>) => {
-    if (seekingRef.current || errored) return;
-    const target = e.target as HTMLVideoElement;
-    const playedFraction = target.currentTime / target.duration || 0;
-    setPlayed(playedFraction);
-  };
-
-  const handleBackward = useCallback(() => {
-    if (!urls) return;
-
-    if (currentIndex > 0) {
-      const newIndex = currentIndex - 1;
-      const newUrl = urls[newIndex];
+  const load = useCallback(
+    (index: number) => {
+      const newUrl = devotions[index]?.url;
       if (!newUrl) return;
-      load(newUrl);
-      setCurrentIndex(newIndex);
-    }
-  }, [urls, currentIndex]);
-
-  const handleForward = useCallback(() => {
-    if (!urls) return;
-
-    if (currentIndex < urls.length - 1) {
-      const newIndex = currentIndex + 1;
-      const newUrl = urls[newIndex];
-      if (!newUrl) return;
-      load(newUrl);
-      setCurrentIndex(newIndex);
-    }
-  }, [urls, currentIndex]);
+      setCurrentIndex(index);
+      reset(newUrl);
+    },
+    [devotions, reset]
+  );
 
   const handleError = useCallback(() => {
-    console.warn(`[Audio Devotions] Failed to load: ${title}`, url);
     setErrored(true);
-    setPlayed(0);
-    setUrl(SILENT_AUDIO);
-    setPlaying(true);
-  }, [title, url]);
+    setCurrentTime(0);
+    setDuration(Number.NaN);
+    setUrl(KEEP_ALIVE_SILENCE);
+  }, []);
+
+  // ReactPlayer renders its <audio> inside Suspense, so it can start loading
+  // (and fire loadedmetadata or error) before React is listening. Catch up
+  // with the element once it's attached.
+  const attachPlayer = useCallback(
+    (node: HTMLVideoElement | null) => {
+      playerRef.current = node;
+      if (!node) return;
+      if (node.error) {
+        handleError();
+      } else if (Number.isFinite(node.duration)) {
+        setDuration(node.duration);
+      }
+    },
+    [handleError]
+  );
+
+  useEffect(() => {
+    const moveToNewDay = () => {
+      if (document.visibilityState !== "visible" || playing) return;
+      const today = getDevotions();
+      if (isSameDay(today[0], devotions[0])) return;
+      setDevotions(today);
+      const newUrl = today[currentIndex]?.url;
+      if (newUrl) reset(newUrl);
+    };
+    document.addEventListener("visibilitychange", moveToNewDay);
+    return () => document.removeEventListener("visibilitychange", moveToNewDay);
+  }, [playing, devotions, currentIndex, reset]);
+
+  const togglePlay = () => {
+    if (!errored) setPlaying((prev) => !prev);
+  };
+
+  const stop = () => {
+    setPlaying(false);
+    if (playerRef.current) playerRef.current.currentTime = 0;
+    setCurrentTime(0);
+  };
+
+  const seekTo = useCallback((seconds: number) => {
+    const player = playerRef.current;
+    if (!player || !Number.isFinite(player.duration)) return;
+    const clamped = Math.min(Math.max(seconds, 0), player.duration);
+    player.currentTime = clamped;
+    setCurrentTime(clamped);
+  }, []);
+
+  const skipBy = (delta: number) =>
+    seekTo((playerRef.current?.currentTime ?? 0) + delta);
+
+  const previous = useCallback(
+    () => load(currentIndex - 1),
+    [currentIndex, load]
+  );
+  const next = useCallback(() => load(currentIndex + 1), [currentIndex, load]);
+
+  const readDuration = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const { duration } = e.target as HTMLVideoElement;
+    if (!errored && Number.isFinite(duration)) setDuration(duration);
+  };
+
+  const keepingAlive = url === KEEP_ALIVE_SILENCE;
+
+  const playerProps = {
+    src: url,
+    playing: keepingAlive || playing,
+    loop: keepingAlive,
+    preload: "metadata",
+    onTimeUpdate: (e: React.SyntheticEvent<HTMLVideoElement>) => {
+      if (!errored) setCurrentTime((e.target as HTMLVideoElement).currentTime);
+    },
+    onDurationChange: readDuration,
+    onLoadedMetadata: readDuration,
+    // Follow the element, so a recording stops when it ends (instead of
+    // ReactPlayer restarting it) and pausing from headphones sticks
+    onPlay: () => {
+      if (!errored) setPlaying(true);
+    },
+    onPause: () => {
+      if (!errored) setPlaying(false);
+    },
+    onError: () => {
+      if (keepingAlive) return;
+      console.warn(`[Audio Devotions] Failed to load: ${title}`, url);
+      handleError();
+    },
+  };
 
   useEffect(() => {
     if (!("mediaSession" in navigator)) return;
@@ -128,13 +152,10 @@ export function useAudioPlayer() {
       "pause",
       errored ? null : () => setPlaying(false)
     );
-    navigator.mediaSession.setActionHandler(
-      "nexttrack",
-      showForward ? handleForward : null
-    );
+    navigator.mediaSession.setActionHandler("nexttrack", hasNext ? next : null);
     navigator.mediaSession.setActionHandler(
       "previoustrack",
-      showBackward ? handleBackward : null
+      hasPrevious ? previous : null
     );
 
     return () => {
@@ -143,33 +164,24 @@ export function useAudioPlayer() {
       navigator.mediaSession.setActionHandler("nexttrack", null);
       navigator.mediaSession.setActionHandler("previoustrack", null);
     };
-  }, [
-    title,
-    errored,
-    showForward,
-    showBackward,
-    handleForward,
-    handleBackward,
-  ]);
+  }, [title, errored, hasNext, hasPrevious, next, previous]);
 
   return {
-    playerRef,
-    url,
-    playing,
-    played,
-    errored,
+    attachPlayer,
+    playerProps,
     title,
-    dateTitle,
-    showForward,
-    showBackward,
-    handlePlayPause,
-    handleStop,
-    handleSeekMouseDown,
-    handleSeekChange,
-    handleSeekMouseUp,
-    handleTimeUpdate,
-    handleForward,
-    handleBackward,
-    handleError,
+    date,
+    playing,
+    currentTime,
+    duration,
+    errored,
+    hasPrevious,
+    hasNext,
+    togglePlay,
+    stop,
+    previous,
+    next,
+    seekTo,
+    skipBy,
   };
 }
