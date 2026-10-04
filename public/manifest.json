@@ -1,10 +1,10 @@
 {
   "name": "Audio Devotions",
   "short_name": "Audio Devotions",
-  "theme_color": "#000000",
+  "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "display": "standalone",
-  "description": "An audio devotional website, it provides daily devotions through a number of different sites.",
+  "description": "Daily audio Bible devotions from Charles Spurgeon, Our Daily Bread and more, in a player with large buttons and text for people with low vision.",
   "start_url": "/",
   "icons": [
     {
@@ -46,7 +46,12 @@
       "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ],
-  "splash_pages": null
+  ]
 }

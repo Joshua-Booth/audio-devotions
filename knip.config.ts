@@ -9,8 +9,8 @@ const config: KnipConfig = {
     "cspell",
     // Coverage tooling (loaded dynamically by vitest)
     "@vitest/coverage-v8",
-    // CSS framework (imported in CSS, not JS)
-    "tailwindcss",
+    // Font (imported in CSS, not JS)
+    "@fontsource-variable/atkinson-hyperlegible-next",
   ],
 
   ignoreBinaries: [

@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within, userEvent, waitFor } from "storybook/test";
 import { App } from "./app";
+import { formatLongDate } from "./format";
+import { setYellowOnBlack } from "./theme";
 
 const meta: Meta<typeof App> = {
   component: App,
@@ -13,6 +15,27 @@ export default meta;
 type Story = StoryObj<typeof App>;
 
 export const Default: Story = {};
+
+export const YellowOnBlack: Story = {
+  beforeEach: () => {
+    setYellowOnBlack(true);
+    return () => setYellowOnBlack(false);
+  },
+};
+
+export const StylesAreApplied: Story = {
+  tags: ["!dev"],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const title = canvas.getByRole("heading", { level: 1 });
+    const play = canvas.getByRole("button", { name: "Play" });
+
+    await waitFor(() => {
+      expect(getComputedStyle(title).fontWeight).toBe("800");
+      expect(getComputedStyle(play).borderTopWidth).toBe("5px");
+    });
+  },
+};
 
 export const PlayPauseToggle: Story = {
   tags: ["!dev"],
@@ -75,10 +98,11 @@ export const NavigateForward: Story = {
     // Initial title should be "Charles Spurgeon - Morning"
     expect(canvas.getByText("Charles Spurgeon - Morning")).toBeInTheDocument();
 
-    const forwardButton = canvas.getByRole("button", { name: "Skip Forward" });
+    expect(
+      canvas.queryByRole("button", { name: "Back" })
+    ).not.toBeInTheDocument();
 
-    // Navigate forward
-    await userEvent.click(forwardButton);
+    await userEvent.click(canvas.getByRole("button", { name: "Next" }));
 
     // Should now show "Charles Spurgeon - Evening"
     await waitFor(() => {
@@ -87,11 +111,7 @@ export const NavigateForward: Story = {
       ).toBeInTheDocument();
     });
 
-    // Backward button should now be visible
-    const backwardButton = canvas.getByRole("button", {
-      name: "Skip Backward",
-    });
-    expect(backwardButton).toBeVisible();
+    expect(canvas.getByRole("button", { name: "Back" })).toBeVisible();
   },
 };
 
@@ -100,10 +120,8 @@ export const NavigateBackward: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const forwardButton = canvas.getByRole("button", { name: "Skip Forward" });
-
     // Navigate forward first
-    await userEvent.click(forwardButton);
+    await userEvent.click(canvas.getByRole("button", { name: "Next" }));
 
     await waitFor(() => {
       expect(
@@ -111,12 +129,8 @@ export const NavigateBackward: Story = {
       ).toBeInTheDocument();
     });
 
-    const backwardButton = canvas.getByRole("button", {
-      name: "Skip Backward",
-    });
-
     // Navigate backward
-    await userEvent.click(backwardButton);
+    await userEvent.click(canvas.getByRole("button", { name: "Back" }));
 
     // Should be back to "Charles Spurgeon - Morning"
     await waitFor(() => {
@@ -132,18 +146,11 @@ export const NavigateToLastItem: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const forwardButton = canvas.getByRole("button", { name: "Skip Forward" });
+    const nextButton = canvas.getByRole("button", { name: "Next" });
 
     // Navigate through all 6 sources (click forward 5 times)
-    // 1. Charles Spurgeon - Morning (start)
-    // 2. Charles Spurgeon - Evening
-    // 3. Word For Today
-    // 4. Our Daily Bread
-    // 5. Faith's Checkbook
-    // 6. Micheal Youssef (last)
-
     for (let i = 0; i < 5; i++) {
-      await userEvent.click(forwardButton);
+      await userEvent.click(nextButton);
     }
 
     // Should be at "Micheal Youssef"
@@ -151,8 +158,7 @@ export const NavigateToLastItem: Story = {
       expect(canvas.getByText("Micheal Youssef")).toBeInTheDocument();
     });
 
-    // Forward button should be hidden (at last item)
-    expect(forwardButton).toHaveClass("invisible");
+    expect(nextButton).not.toBeVisible();
   },
 };
 
@@ -161,28 +167,25 @@ export const DelayedSourceShowsDifferentDate: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const forwardButton = canvas.getByRole("button", { name: "Skip Forward" });
-
-    // Get today's date for comparison
     const today = new Date();
-    const todayStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
 
     // Initially shows today's date
-    expect(canvas.getByText(todayStr)).toBeInTheDocument();
+    expect(canvas.getByText(formatLongDate(today))).toBeInTheDocument();
 
     // Navigate to Micheal Youssef (5 clicks forward)
+    const nextButton = canvas.getByRole("button", { name: "Next" });
     for (let i = 0; i < 5; i++) {
-      await userEvent.click(forwardButton);
+      await userEvent.click(nextButton);
     }
 
     await waitFor(() => {
       expect(canvas.getByText("Micheal Youssef")).toBeInTheDocument();
     });
 
-    // Date should be different (yesterday) for delayed source
-    // The date element should NOT show today's date
-    const dateElement = canvasElement.querySelector("p");
-    expect(dateElement?.textContent).not.toBe(todayStr);
+    expect(canvas.getByText(formatLongDate(yesterday))).toBeInTheDocument();
+    expect(canvas.queryByText(formatLongDate(today))).not.toBeInTheDocument();
   },
 };
 
@@ -191,18 +194,11 @@ export const SeekerInteraction: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const seeker = canvas.getByRole("slider", { name: "Seeker" });
+    const seeker = canvas.getByRole("slider", { name: "Playback position" });
 
-    // Initial value should be 0
     expect(seeker).toHaveValue("0");
-
-    // Simulate seeking - fire change event
-    await userEvent.click(seeker);
-
-    // The seeker should be interactive
-    expect(seeker).toBeEnabled();
     expect(seeker).toHaveAttribute("min", "0");
-    expect(seeker).toHaveAttribute("max", "0.999999");
+    expect(seeker).toHaveAttribute("aria-valuetext");
   },
 };
 
@@ -214,6 +210,107 @@ export const AudioElementLoads: Story = {
       const audioElement = canvasElement.querySelector("audio");
       expect(audioElement).toBeInTheDocument();
       expect(audioElement?.src).toContain(".mp3");
+    });
+  },
+};
+
+export const ShowsMessageWhenRecordingFails: Story = {
+  tags: ["!dev"],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvasElement.querySelector("audio")).toBeInTheDocument();
+    });
+    canvasElement.querySelector("audio")!.dispatchEvent(new Event("error"));
+
+    await waitFor(() => {
+      expect(canvas.getByText("Not available yet. Press Next.")).toBeVisible();
+    });
+    expect(canvas.getByRole("button", { name: "Play" })).toBeDisabled();
+
+    await userEvent.click(canvas.getByRole("button", { name: "Next" }));
+    await waitFor(() => {
+      expect(
+        canvas.queryByText("Not available yet. Press Next.")
+      ).not.toBeInTheDocument();
+    });
+  },
+};
+
+export const PointsBackWhenLastRecordingFails: Story = {
+  tags: ["!dev"],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const nextButton = canvas.getByRole("button", { name: "Next" });
+    for (let i = 0; i < 5; i++) {
+      await userEvent.click(nextButton);
+    }
+    await waitFor(() => {
+      expect(canvas.getByText("Micheal Youssef")).toBeInTheDocument();
+    });
+
+    canvasElement.querySelector("audio")!.dispatchEvent(new Event("error"));
+
+    await waitFor(() => {
+      expect(canvas.getByText("Not available yet. Press Back.")).toBeVisible();
+    });
+  },
+};
+
+export const StopsWhenRecordingEnds: Story = {
+  tags: ["!dev"],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole("button", { name: "Play" }));
+    await waitFor(() => {
+      expect(canvas.getByRole("button", { name: "Pause" })).toBeInTheDocument();
+    });
+
+    // The browser pauses the element when a recording finishes
+    canvasElement.querySelector("audio")!.dispatchEvent(new Event("pause"));
+
+    await waitFor(() => {
+      expect(canvas.getByRole("button", { name: "Play" })).toBeInTheDocument();
+    });
+  },
+};
+
+export const FailureDoesNotStartNextRecording: Story = {
+  tags: ["!dev"],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(() => {
+      expect(canvasElement.querySelector("audio")).toBeInTheDocument();
+    });
+    canvasElement.querySelector("audio")!.dispatchEvent(new Event("error"));
+    await waitFor(() => {
+      expect(canvas.getByText("Not available yet. Press Next.")).toBeVisible();
+    });
+
+    await userEvent.click(canvas.getByRole("button", { name: "Next" }));
+
+    await waitFor(() => {
+      expect(canvas.getByRole("button", { name: "Play" })).toBeEnabled();
+    });
+  },
+};
+
+export const KeepsFocusWhenNextHides: Story = {
+  tags: ["!dev"],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const nextButton = canvas.getByRole("button", { name: "Next" });
+    for (let i = 0; i < 5; i++) {
+      await userEvent.click(nextButton);
+    }
+
+    await waitFor(() => {
+      expect(canvas.getByRole("button", { name: "Play" })).toHaveFocus();
     });
   },
 };

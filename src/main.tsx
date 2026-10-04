@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { App } from "./app";
 import { initializeTheme } from "./theme";
 
-import "./index.css";
+import "./global.css";
 
 // Initialize theme before React renders to avoid flash of wrong theme
 initializeTheme();
