@@ -1,8 +1,7 @@
 /// <reference types="vitest/config" />
-import tailwindcss from "@tailwindcss/vite";
+import stylex from "@stylexjs/unplugin";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import svgrPlugin from "vite-plugin-svgr";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
@@ -12,9 +11,30 @@ const dirname =
     ? __dirname
     : path.dirname(fileURLToPath(import.meta.url));
 
+/**
+ * StyleX's plugin starts an interval it only clears when an HTTP server closes.
+ * Vitest's servers have none, so every test run hung until its close timeout.
+ */
+function stylexPlugin() {
+  const plugin = stylex.vite();
+  const { configureServer } = plugin;
+  return {
+    ...plugin,
+    configureServer(server) {
+      const setInterval = globalThis.setInterval;
+      globalThis.setInterval = (...args) => setInterval(...args).unref();
+      try {
+        return configureServer.call(this, server);
+      } finally {
+        globalThis.setInterval = setInterval;
+      }
+    },
+  };
+}
+
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [tailwindcss(), react(), svgrPlugin()],
+  plugins: [stylexPlugin(), react()],
   build: {
     outDir: "build",
     sourcemap: true,

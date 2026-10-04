@@ -15,7 +15,10 @@ easy-to-use interface with large media controls.
 
 - 5+ Daily audio devotionals
 - Dark/Light themes
+- Responsive, including zoom and larger text sizes
 - Live progress bar
+- Lock screen and headphone controls
+- Error state when a devotion isn't available yet
 
 ## Getting Started
 
@@ -25,10 +28,11 @@ Run `pnpm build` to create a production build.
 
 #### Adding additional sources
 
-Inside [sources.ts](src/sources.ts):
+Add an entry to `SOURCES` in [sources.ts](src/sources.ts) with:
 
-- Append to the list `getSourceNames` with the name of the source
-- Append to the list `getSources` with the link to the source.
+- `name`: shown in the app exactly as written
+- `daysBehind`: how many days late the source publishes (0 for today's)
+- `url`: builds the recording's link from the day's year, month and day
 
 _Note: The source must update with each day as a daily devotional._
 
@@ -37,8 +41,6 @@ _Note: The source must update with each day as a daily devotional._
 - [React](https://react.dev/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Vite](https://vite.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-
-## Author
-
-**Joshua Booth** - [Joshua-Booth](https://github.com/Joshua-Booth)
+- [StyleX](https://stylexjs.com/)
+- [Atkinson Hyperlegible Next](https://www.brailleinstitute.org/freefont/), a
+  typeface designed by the Braille Institute for readers with low vision
