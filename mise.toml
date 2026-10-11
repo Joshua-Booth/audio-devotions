@@ -55,7 +55,7 @@ run = "oxlint --fix"
 [tasks."lint:check"]
 description = "Check code with Oxlint"
 alias = "lc"
-run = "oxlint"
+run = "oxlint --max-warnings 0"
 
 [tasks.typecheck]
 description = "Run TypeScript type checking"

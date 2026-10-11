@@ -5,14 +5,13 @@ pre-commit:
   commands:
     1_lint:
       glob: "*.{ts,tsx,js}"
-      run: mise exec -- oxlint --fix {staged_files}
+      run: mise exec -- oxlint --max-warnings 0 --fix {staged_files}
       stage_fixed: true
     2_format:
-      glob: "*.{ts,tsx,js,css,html,json,yml,yaml,md}"
+      glob: "*.{ts,tsx,js,css,html,json,yml,yaml,md,toml}"
       run: mise exec -- oxfmt --no-error-on-unmatched-pattern {staged_files}
       stage_fixed: true
     3_typecheck:
-      glob: "*.{ts,tsx}"
       run: mise exec -- tsc --noEmit
 
 commit-msg:

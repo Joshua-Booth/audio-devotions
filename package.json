@@ -12,7 +12,7 @@
     "test:unit": "vitest --project=unit",
     "test:ui": "vitest --ui",
     "lint": "oxlint --fix",
-    "lint:check": "oxlint",
+    "lint:check": "oxlint --max-warnings 0",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "typecheck": "tsc --noEmit",
