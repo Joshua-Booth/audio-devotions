@@ -45,7 +45,7 @@ run = "oxfmt --write ."
 [tasks."format:check"]
 description = "Check code formatting"
 alias = "fc"
-run = "oxfmt ."
+run = "oxfmt --check ."
 
 [tasks.lint]
 description = "Lint and fix code"
