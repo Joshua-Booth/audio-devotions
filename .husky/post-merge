@@ -1,2 +1,0 @@
-eval "$(mise env -s bash)"
-pnpm install --frozen-lockfile

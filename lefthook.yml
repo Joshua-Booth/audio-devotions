@@ -1,0 +1,26 @@
+# Git hooks. Each command runs on the staged files it matches, one after
+# another so no two fixers edit the same file at once, and re-stages
+# anything a fixer changed. The type check covers the whole project
+pre-commit:
+  commands:
+    1_lint:
+      glob: "*.{ts,tsx,js}"
+      run: mise exec -- oxlint --fix {staged_files}
+      stage_fixed: true
+    2_format:
+      glob: "*.{ts,tsx,js,css,html,json,yml,yaml,md}"
+      run: mise exec -- oxfmt --no-error-on-unmatched-pattern {staged_files}
+      stage_fixed: true
+    3_typecheck:
+      glob: "*.{ts,tsx}"
+      run: mise exec -- tsc --noEmit
+
+commit-msg:
+  commands:
+    commitlint:
+      run: mise exec -- commitlint --edit {1}
+
+post-merge:
+  commands:
+    install:
+      run: mise exec -- pnpm install --frozen-lockfile

@@ -5,6 +5,8 @@ const config: KnipConfig = {
   project: ["src/**/*.{ts,tsx}"],
 
   ignoreDependencies: [
+    // Run by lefthook through mise exec, which knip doesn't parse
+    "@commitlint/cli",
     // CLI tool for spell checking (run via mise tasks)
     "cspell",
     // Coverage tooling (loaded dynamically by vitest)
